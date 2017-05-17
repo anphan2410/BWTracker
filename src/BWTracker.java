@@ -25,33 +25,15 @@ public class BWTracker {
 
             FileInputStream excelFile = new FileInputStream(new File(FILE_NAME));
             Workbook workbook = new XSSFWorkbook(excelFile);
+            excelFile.close();
             Sheet sheet0 = workbook.getSheetAt(0);
-            Iterator<Row> iterator = sheet0.iterator();
-            //System.out.println(sheet0.column);
-            while (iterator.hasNext()) {
-
-                Row currentRow = iterator.next();
-                Iterator<Cell> cellIterator = currentRow.iterator();
-                System.out.println(currentRow.getCell(8).getColumnIndex());
-                
-                while (cellIterator.hasNext()) {
-
-                	
-                    Cell currentCell = cellIterator.next();
-                    
-                    System.out.println(currentRow.getRowNum() + " ah" + currentCell.getColumnIndex());
-                    //getCellTypeEnum shown as deprecated for version 3.15
-                    //getCellTypeEnum ill be renamed to getCellType starting from version 4.0
-                    if (currentCell.getCellTypeEnum() == CellType.STRING) {
-                        System.out.println(currentCell.getStringCellValue() + "-X-");
-                    } else if (currentCell.getCellTypeEnum() == CellType.NUMERIC) {
-                        System.out.println(currentCell.getNumericCellValue() + "-0-");
-                    }
-
-                }
-                System.out.println();
-
-            }
+            System.out.println(getLastDataRowOfColumn(sheet0, 1));
+            
+//            FileOutputStream outputStream = new FileOutputStream(FILE_NAME);
+//            workbook.write(outputStream);
+//   
+//            outputStream.flush();
+//            outputStream.close();
             workbook.close();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -60,12 +42,20 @@ public class BWTracker {
         }
 	}
 	
-	public static int getLastDataCellOfColumn(Sheet asheet, int acolumn){
-		Iterator<Row> iterator = asheet.iterator();
-        while (iterator.hasNext()) {
-            Row currentRow = iterator.next();
-        }
-		return 0;
+	public static int getLastDataRowOfColumn(Sheet asheet, int acolumn) {
+		int i;
+		for (i = asheet.getLastRowNum(); i>=0; i--) {
+			if (asheet.getRow(i) != null) {
+				if (asheet.getRow(i).getCell(acolumn) != null) {
+					if (!asheet.getRow(i).getCell(acolumn).getStringCellValue().equals("")) {
+						break;
+					}
+				}
+			}			
+		}
+		return i;
 	}
+	
+	
 
 }
